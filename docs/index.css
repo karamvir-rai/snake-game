@@ -1,0 +1,106 @@
+@import url('https://fonts.googleapis.com/css?family=Press+Start+2P&display=swap');
+
+:root {
+    --block-size: 24px; 
+    --width: 800px; 
+}
+
+body {
+    background: #ECE9E6; 
+    background: -webkit-linear-gradient(to right, #FFFFFF, #ECE9E6); 
+    background: linear-gradient(to right, #FFFFFF, #ECE9EF); 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+
+    -webkit-user-select: none;  /* Safari */
+    -moz-user-select: none;  /* Firefox */
+    -ms-user-select: none;  /* IE10+/Edge */
+    user-select: none;  /* Standard */
+}
+
+#game-area {
+    background: white; 
+    border: 3px solid black; 
+    height: 550px; 
+    width: var(--width); 
+    position: relative;
+    opacity: 0.90;
+}
+
+h1, #game-area, footer {
+    transition: transform 0.35s; 
+}
+
+h1 {
+    color: #4B2E83; 
+}
+
+.paused { 
+    color: #85754D; 
+    transform: scale(1.075);  
+}
+
+h1, .paused {
+    text-shadow: 4px 3px white; 
+}
+    
+
+h1, p, #pause-screen {
+    font-family: 'Press Start 2P', cursive; 
+    text-align: center; 
+}
+
+.snake-filled {
+    background: blue; 
+}
+
+.food-filled {
+    background: red; 
+}
+
+#game-area:hover, footer:hover {
+    transform: scale(1.01); 
+}
+
+.tile {
+    border: 1px solid black; 
+    position: absolute; 
+    height: var(--block-size); 
+    width: var(--block-size); 
+}
+
+.snake {
+    background-size: contain; 
+    background: blue;
+    border: 1px solid black; 
+    height: var(--block-size); 
+    width: var(--block-size); 
+    position: absolute;
+}
+
+.food {
+    background-size: contain; 
+    position: absolute; 
+    background: red;
+    border: 1px solid black; 
+    height: var(--block-size); 
+    width: var(--block-size);      
+}
+
+footer {
+    background: white; 
+    margin-top: 8px; 
+    padding-left: 5px; 
+    width: var(--width); 
+    height: 125px; 
+    border: 3px solid black; 
+}
+
+p {
+    font-size: 16pt; 
+}
+
+.hidden {
+    display: none;
+}
