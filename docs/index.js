@@ -12,13 +12,15 @@
     const SIZE = 25; 
     const DELAY = 75;  // milliseconds 
 
-    // 
+    // a list consisting all the snake segments that together represent the
+    // snake. a snake segment is a SIZExSIZE div object.   
     let snake; 
-    // 
-    let directionQueue; 
-    // 
+    // the current direction of the head of the snake. 
     let direction; 
+    // queue of directions that is used to update the direction of the snake. 
+    let directionQueue; 
 
+    // a single SIZExSIZE div object. 
     let food; 
 
     window.onload = function() {
@@ -29,8 +31,13 @@
     }; 
 
     /**
+     * Processes the key the user has just pressed. 
+     * If the user has pressed an arrow key or any of the 'wasd' keys, then
+     * the corresponding direction gets queue'd. 
+     * Handles the case when the user presses space bar to pause/resume gameplay. 
      * 
-     * @param event 
+     * @param event the keyevent containing information of what
+     *              key the user has just pressed. 
      */
     function keyEvent(event) {
         switch (event.keyCode) {
@@ -57,8 +64,10 @@
     }
 
     /**
+     * Adds the the given move to the snakes direction queue if the move 
+     * is not given while the game is paused.
      * 
-     * @param move 
+     * @param move  the next move direction to move the snake. 
      */
     function addMove(move) {
         if (!isPaused()) {
@@ -67,7 +76,8 @@
     }
 
     /**
-     * 
+     * Sets up the game by placing the snake piece and a randomly placed 
+     * food piece on the screen. 
      */
     function gameSetup() {
         snake = []; 
@@ -86,7 +96,10 @@
     }
 
     /**
-     * 
+     * Handles the animation rate of the gameplay. 
+     * Processes any snake direction updates from the direction queue and then 
+     * updates position of the snake segments as well as the food pieces (if 
+     * necessary) at a constant interval. 
      */
     function startGame() {
         setInterval(function() {
@@ -107,7 +120,16 @@
     }
 
     /**
-     * 
+     * Updates the head position of the snake based on the current direction
+     * of the snake. 
+     * Handles the event in which the next head position collides with the current
+     * food position, in which case the snake's length increments by one and a 
+     * new food element is spawned if a spawn location exists, if not the user 
+     * wins. 
+     * Handles ending the game if the new head position collides with the snake 
+     * itself.
+     * In both cases of self-collision and winning, the game stops and resets 
+     * to initial state. 
      */
     function update() {
         let oldSnakeHead = snake[0]; 
@@ -168,18 +190,18 @@
                 snake[i].style.backgroundColor = "gray"; 
                 setTimeout(function () {
                     clearGame("Uh-oh, you died :(");  
-                }, SIZE * 2); 
+                }, SIZE); 
             }
         }
-
-        // check to see if the user has won the game, winning is where there are no more 
-        // empty tiles remaining (snake takes up the entirety of area).
-        if (snake.length === ((WIDTH / SIZE) * (HEIGHT / SIZE))) {
+        
+        if (userWon()) {
             clearGame("You've beat the game, congrats! :)")
         }
     }
 
     /**
+     * Called whenever the user loses (dies on self-collides) or wins (no more empty 
+     * tiles left on screen). Resets game to initial state. 
      * 
      * @param message   the text to display in the alert dialog. 
      */
@@ -206,7 +228,8 @@
     }
 
     /**
-     * 
+     * Clears any food elements on the screen and creates a new on with a 
+     * random position.
      */
     function spawnFood() {
         if($("game-area").contains(food)) {
@@ -219,25 +242,31 @@
     }
 
     /**
-     * 
+     * Computes an x/y position and sets it to the new position of the food 
+     * element. If the new position overlaps with the snake it will recompute 
+     * a new position until an empty location is found.  
      */
     function getCoordinates() {
-        food.style.left = getRandomPosition(WIDTH - SIZE) + "px"; 
-        food.style.top = getRandomPosition(HEIGHT - SIZE) + "px";
-        let spotTaken = false; 
-        for(let i = 0; i < snake.length; i++) {
-            if (isCollision(snake[i], food)) {
-                spotTaken = true; 
+        // only compute a x/y position for the food if there is an empty SIZExSIZE
+        // tile available. if not, the game is over and the user wins. 
+        if (!userWon()) {
+            food.style.left = getRandomPosition((WIDTH - SIZE) / SIZE) + "px"; 
+            food.style.top = getRandomPosition((HEIGHT - SIZE) / SIZE) + "px";
+            let spotTaken = false; 
+            for(let i = 0; i < snake.length; i++) {
+                if (isCollision(snake[i], food)) {
+                    spotTaken = true; 
+                }
             }
-        }
-
-        if(spotTaken) {
-            getCoordinates(); 
+    
+            if(spotTaken) {
+                getCoordinates(); 
+            }
         }
     }
 
     /**
-     * 
+     * Toggles the game header text between "Snake Game!" and "Game Paused!".
      */
     function toggleGameHeader() {
         if (isPaused()) {
@@ -250,28 +279,41 @@
     }
 
     /**
-     * 
-     * @param range
-     * @returns  
+     * @param range value used to calculate the range of the returned 
+     *              random number.   
+     * @returns     a random number x * SIZE where x is 1 <= x <= range.
      */
     function getRandomPosition(range) {
-        return SIZE * Math.floor(Math.random() * (range / SIZE) + 1); 
+        return SIZE * Math.floor(Math.random() * range + 1); 
     }
 
     /**
+     * Takes in two div objects in HTML DOM and returns if they are 
+     * colliding (both objects have the same x/y position) 
      * 
-     * @param objectA 
-     * @param objectB 
+     * @param objectA   div object to compare against parameter 'objectB'
+     * @param objectB   div object to compare against parameter 'objectA'
+     * @returns         true if the objects are colliding, false otherwise. 
      */
     function isCollision(objectA, objectB) {
         return (objectA.style.top === objectB.style.top && objectA.style.left === objectB.style.left); 
     }
 
     /**
-     * @returns 
+     * @returns true if the game is currently paused, false otherwise. 
      */
     function isPaused() {
         return $("title").innerText.includes("Paused"); 
+    }
+
+    /**
+     * @returns true if the user has won the game, false otherwise. 
+     *          the user wins the game if there are no more empty SIZExSIZE
+     *          spaces remaining (snake takes up the entirety of area). 
+     *          
+     */
+    function userWon() {
+        return snake.length >= ((WIDTH / SIZE) * (HEIGHT / SIZE)); 
     }
 
     /**
