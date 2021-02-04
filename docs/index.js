@@ -311,7 +311,6 @@
      * @returns true if the user has won the game, false otherwise. 
      *          the user wins the game if there are no more empty SIZExSIZE
      *          spaces remaining (snake takes up the entirety of area). 
-     *          
      */
     function userWon() {
         return snake.length >= ((WIDTH / SIZE) * (HEIGHT / SIZE)); 
